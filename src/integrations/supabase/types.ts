@@ -14,7 +14,42 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      retrospectives: {
+        Row: {
+          created_at: string
+          favorite_memory: string
+          how_met: string
+          id: string
+          meaning: string
+          one_word: string
+          photos: string[] | null
+          receiver_name: string
+          sender_name: string
+        }
+        Insert: {
+          created_at?: string
+          favorite_memory: string
+          how_met: string
+          id?: string
+          meaning: string
+          one_word: string
+          photos?: string[] | null
+          receiver_name: string
+          sender_name: string
+        }
+        Update: {
+          created_at?: string
+          favorite_memory?: string
+          how_met?: string
+          id?: string
+          meaning?: string
+          one_word?: string
+          photos?: string[] | null
+          receiver_name?: string
+          sender_name?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
