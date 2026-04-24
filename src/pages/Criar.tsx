@@ -90,16 +90,27 @@ const Criar = () => {
     return () => clearTimeout(t);
   }, [songSearch]);
 
+  // Tick every second so h/m/s update live
+  const [now, setNow] = useState(() => new Date());
+  useEffect(() => {
+    const t = setInterval(() => setNow(new Date()), 1000);
+    return () => clearInterval(t);
+  }, []);
+
   const counter = useMemo(() => {
     if (!startDate) return null;
     const start = new Date(startDate);
-    const days = differenceInDays(new Date(), start);
-    if (days < 0) return null;
-    const years = Math.floor(days / 365);
-    const months = Math.floor((days % 365) / 30);
-    const restDays = days - years * 365 - months * 30;
-    return { years, months, days: restDays };
-  }, [startDate]);
+    const diff = now.getTime() - start.getTime();
+    if (diff < 0) return null;
+    const totalDays = Math.floor(diff / 86400000);
+    const years = Math.floor(totalDays / 365);
+    const months = Math.floor((totalDays % 365) / 30);
+    const days = totalDays - years * 365 - months * 30;
+    const hours = Math.floor((diff % 86400000) / 3600000);
+    const minutes = Math.floor((diff % 3600000) / 60000);
+    const seconds = Math.floor((diff % 60000) / 1000);
+    return { years, months, days, hours, minutes, seconds };
+  }, [startDate, now]);
 
   const canNext = () => {
     if (step === 1) return !!relationshipType;
