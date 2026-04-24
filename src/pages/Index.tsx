@@ -2,9 +2,9 @@ import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, useInView } from "framer-motion";
 import SkyBackground from "@/components/SkyBackground";
-import cisyAcenando from "@/assets/cisy-acenando.png";
 import cisyAnotando from "@/assets/cisy-anotando.png";
 import cisyEmpolgada from "@/assets/cisy-empolgada.png";
+import cisyComemorando from "@/assets/cisy-comemorando.png";
 import cisyCoracao from "@/assets/cisy-segurando-coracao.png";
 
 const fadeUp = {
@@ -29,9 +29,10 @@ const PREVIEW_CARDS = [
 ];
 
 const TESTIMONIALS = [
-  { stars: 5, text: "Meu namorado chorou quando abriu. Melhor presente que já dei.", author: "@mariasouza_" },
-  { stars: 5, text: "Fiz para minha melhor amiga de 10 anos. Ela ficou sem palavras.", author: "@camilaoliveira" },
-  { stars: 5, text: "Simples, rápido e emocionante. Vale muito mais do que paguei.", author: "@lucas.mts" },
+  { stars: 5, text: "Meu namorado chorou. Foi o melhor presente que já dei.", author: "@mariasouza_", name: "Maria Souza", avatar: "https://randomuser.me/api/portraits/women/1.jpg" },
+  { stars: 5, text: "Fiz para minha melhor amiga de 10 anos. Ela ficou sem palavras.", author: "@camilaoliveira", name: "Camila Oliveira", avatar: "https://randomuser.me/api/portraits/women/2.jpg" },
+  { stars: 5, text: "Simples, rápido e emocionante. Vale muito mais do que paguei.", author: "@lucas.mts", name: "Lucas Matos", avatar: "https://randomuser.me/api/portraits/men/1.jpg" },
+  { stars: 5, text: "Minha esposa chorou nos primeiros 30 segundos. Worth it!", author: "@feliperodrigues", name: "Felipe Rodrigues", avatar: "https://randomuser.me/api/portraits/men/2.jpg" },
 ];
 
 const useAutoCarousel = (length: number, delay = 5000) => {
@@ -43,10 +44,39 @@ const useAutoCarousel = (length: number, delay = 5000) => {
   return [i, setI] as const;
 };
 
+const STEP_CARDS = [
+  {
+    n: "01",
+    title: "Preencha com Carinho",
+    desc: "Conte a história de vocês, escolha músicas, fotos e a data.",
+    badge: "⏱️ ~2-3 minutos",
+    bg: "#FFF0F3",
+    accent: "#E8456B",
+    cisy: cisyAnotando,
+  },
+  {
+    n: "02",
+    title: "Receba na Hora",
+    desc: "Sua retrospectiva fica pronta em segundos, com link único.",
+    badge: "✨ Instantâneo",
+    bg: "#FFF8E1",
+    accent: "#D4AF37",
+    cisy: cisyEmpolgada,
+  },
+  {
+    n: "03",
+    title: "Compartilhe",
+    desc: "Envie o link. Veja a reação. Garanta emoção 🦢",
+    badge: "💔 → 😭 → 😍",
+    bg: "#E8F4FD",
+    accent: "#4A90E2",
+    cisy: cisyComemorando,
+  },
+];
+
 const Index = () => {
   const navigate = useNavigate();
   const [previewIdx, setPreviewIdx] = useAutoCarousel(PREVIEW_CARDS.length);
-  const [testIdx, setTestIdx] = useAutoCarousel(TESTIMONIALS.length, 6000);
 
   return (
     <div className="relative min-h-screen overflow-x-hidden">
@@ -61,53 +91,73 @@ const Index = () => {
         </div>
       </header>
 
+      {/* HERO */}
       <section className="relative z-10 flex min-h-[calc(100vh-60px)] items-center px-5">
-        <div className="mx-auto grid w-full max-w-6xl items-center gap-12 md:grid-cols-2">
+        <div className="mx-auto w-full max-w-3xl text-center">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }}>
             <p className="mb-4 text-[10px] font-semibold uppercase tracking-[4px]" style={{ color: "#E8456B" }}>🦢 MyLove</p>
-            <h1 className="mb-5 font-display text-[34px] font-bold leading-tight text-dark md:text-[52px]">
+            <h1 className="mb-5 font-display text-[36px] font-bold leading-tight text-dark md:text-[60px]">
               Transforme uma história em <span className="wavy-underline" style={{ color: "#E8456B" }}>presente</span>
             </h1>
-            <p className="mb-8 max-w-[440px] text-[15px] leading-[1.8]" style={{ color: "#666" }}>
-              Uma retrospectiva digital, emocionante e personalizada — feita pra quem você ama. Em poucos cliques, vira um presente que ninguém esquece.
+            <p className="mx-auto mb-8 max-w-[520px] text-[16px] leading-[1.7]" style={{ color: "#555" }}>
+              Crie uma retrospectiva que vai fazer ela chorar. Não é só um presente — é uma viagem pelos momentos que realmente importam.
             </p>
+
+            {/* STATS */}
+            <div className="mx-auto mb-8 grid max-w-xl grid-cols-3 gap-4">
+              {[
+                { v: "4.200+", l: "Casais já criaram" },
+                { v: "8 min", l: "Tempo médio" },
+                { v: "4.9★", l: "1.2k reviews" },
+              ].map((s) => (
+                <div key={s.l} className="rounded-2xl bg-white/70 p-3 backdrop-blur-sm" style={{ border: "1px solid rgba(232,69,107,0.12)" }}>
+                  <div className="font-display text-xl font-bold md:text-2xl" style={{ color: "#E8456B" }}>{s.v}</div>
+                  <div className="text-[10px] uppercase tracking-wider md:text-xs" style={{ color: "#999" }}>{s.l}</div>
+                </div>
+              ))}
+            </div>
+
             <button onClick={() => navigate("/criar")} className="rounded-full gradient-pink-gold px-9 py-4 text-lg font-semibold text-white transition hover:scale-105" style={{ boxShadow: "0 8px 30px rgba(232,69,107,0.4)" }}>
               Criar agora 🦢
             </button>
-            <p className="mt-4 text-sm" style={{ color: "#E8456B" }}>🦢 +200 histórias criadas</p>
-          </motion.div>
-
-          <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.8, delay: 0.2 }} className="relative flex justify-center">
-            <div className="relative">
-              <div className="cisy-glow" />
-              <img src={cisyAcenando} alt="Cisy acenando" className="cisy-float relative w-[220px] md:w-[280px]" />
-            </div>
+            <p className="mt-4 text-sm" style={{ color: "#E8456B" }}>🦢 +200 histórias criadas hoje</p>
           </motion.div>
         </div>
       </section>
 
+      {/* HOW IT WORKS */}
       <Section className="relative z-10 bg-white py-20 px-5">
-        <div className="mx-auto max-w-6xl text-center">
-          <h2 className="mb-3 font-display text-3xl font-bold text-dark md:text-4xl">Como funciona?</h2>
-          <p className="mb-14 text-muted-foreground">Em 3 passos simples, sua história vira presente.</p>
-          <div className="relative grid gap-12 md:grid-cols-3">
-            <div className="absolute left-[16%] right-[16%] top-12 hidden border-t-2 border-dashed md:block" style={{ borderColor: "rgba(232,69,107,0.3)" }} />
-            {[
-              { n: "01", title: "Preencha com carinho", desc: "Conte a história, escolha músicas, fotos e a data." },
-              { n: "02", title: "Receba na hora", desc: "Sua retrospectiva pronta em segundos, com link único." },
-              { n: "03", title: "Compartilhe", desc: "Envie o link e veja a reação. Garantimos lágrimas." },
-            ].map((s, idx) => (
-              <div key={s.n} className="relative">
-                <span className="font-display text-7xl font-bold opacity-30" style={{ color: "#D4AF37" }}>{s.n}</span>
-                <h3 className="mt-2 font-display text-xl font-bold text-dark">{s.title}</h3>
-                <p className="mt-2 text-sm text-muted-foreground">{s.desc}</p>
-                {idx === 0 && <img src={cisyAnotando} alt="" className="absolute -right-12 top-0 hidden w-[140px] md:block" />}
+        <div className="mx-auto max-w-6xl">
+          <div className="mb-14 text-center">
+            <h2 className="mb-3 font-display text-3xl font-bold text-dark md:text-4xl">Como funciona? <span className="text-base font-normal" style={{ color: "#999" }}>(3 passos simples)</span></h2>
+            <p className="text-muted-foreground">Sua história vira um presente inesquecível em minutos.</p>
+          </div>
+          <div className="grid gap-6 md:grid-cols-3">
+            {STEP_CARDS.map((s) => (
+              <div
+                key={s.n}
+                className="relative overflow-hidden rounded-3xl p-6 transition hover:-translate-y-1 hover:shadow-xl"
+                style={{ background: s.bg, border: `1px solid ${s.accent}20` }}
+              >
+                <div className="font-display text-6xl font-bold leading-none opacity-30" style={{ color: s.accent }}>{s.n}</div>
+                <h3 className="mt-3 font-display text-xl font-bold text-dark">{s.title}</h3>
+                <p className="mt-2 min-h-[48px] text-sm" style={{ color: "#555" }}>{s.desc}</p>
+
+                {/* Cisy inside the card */}
+                <div className="my-4 flex justify-center">
+                  <img src={s.cisy} alt="" className="h-[140px] w-auto object-contain drop-shadow-lg" />
+                </div>
+
+                <div className="rounded-full px-3 py-1.5 text-center text-xs font-semibold" style={{ background: "#fff", color: s.accent, border: `1px solid ${s.accent}30` }}>
+                  {s.badge}
+                </div>
               </div>
             ))}
           </div>
         </div>
       </Section>
 
+      {/* PREVIEW CAROUSEL */}
       <Section className="relative z-10 py-20 px-5" style={{ background: "#FFF0F3" }}>
         <div className="mx-auto max-w-6xl">
           <h2 className="mb-3 text-center font-display text-3xl font-bold text-dark md:text-4xl">Veja como fica</h2>
@@ -143,30 +193,27 @@ const Index = () => {
         </div>
       </Section>
 
+      {/* TESTIMONIALS — grid */}
       <Section className="relative z-10 bg-white py-20 px-5">
-        <div className="mx-auto max-w-3xl">
+        <div className="mx-auto max-w-6xl">
           <h2 className="mb-12 text-center font-display text-3xl font-bold text-dark md:text-4xl">O que estão dizendo 🦢</h2>
-          <div className="overflow-hidden">
-            <motion.div className="flex" animate={{ x: `-${testIdx * 100}%` }} transition={{ duration: 0.6, ease: "easeInOut" }}>
-              {TESTIMONIALS.map((t, i) => (
-                <div key={i} className="w-full shrink-0 px-2">
-                  <div className="card-soft mx-auto max-w-md p-8 text-center">
-                    <div className="mb-3" style={{ color: "#D4AF37" }}>{"★".repeat(t.stars)}</div>
-                    <p className="mb-4 font-display text-lg italic" style={{ color: "#333" }}>"{t.text}"</p>
-                    <p className="text-sm font-semibold" style={{ color: "#E8456B" }}>{t.author}</p>
-                  </div>
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            {TESTIMONIALS.map((t, i) => (
+              <div key={i} className="card-soft flex flex-col items-center p-6 text-center transition hover:-translate-y-1">
+                <img src={t.avatar} alt={t.name} className="mb-3 h-16 w-16 rounded-full object-cover ring-2 ring-pink-200" loading="lazy" />
+                <div className="mb-2 text-sm" style={{ color: "#D4AF37" }}>{"★".repeat(t.stars)}</div>
+                <p className="mb-4 font-display text-sm italic leading-relaxed" style={{ color: "#333" }}>"{t.text}"</p>
+                <div className="mt-auto">
+                  <p className="text-sm font-semibold text-dark">{t.name}</p>
+                  <p className="text-xs" style={{ color: "#E8456B" }}>{t.author}</p>
                 </div>
-              ))}
-            </motion.div>
-          </div>
-          <div className="mt-6 flex justify-center gap-2">
-            {TESTIMONIALS.map((_, i) => (
-              <button key={i} onClick={() => setTestIdx(i)} className="h-2 rounded-full transition-all" style={{ width: i === testIdx ? 24 : 8, background: i === testIdx ? "#E8456B" : "#E8456B40" }} />
+              </div>
             ))}
           </div>
         </div>
       </Section>
 
+      {/* PRICING */}
       <Section className="relative z-10 py-20 px-5">
         <div className="mx-auto max-w-5xl">
           <h2 className="mb-3 text-center font-display text-3xl font-bold text-dark md:text-4xl">Escolha seu presente</h2>
@@ -181,14 +228,14 @@ const Index = () => {
                 <li>✦ Link válido por 24h</li>
                 <li>✦ Compartilhamento fácil</li>
               </ul>
-              <a href="https://mylove7.pay.yampi.com.br/checkout?skipToCheckout=1&tokenReference=GH61DX22LY" target="_blank" rel="noopener noreferrer" className="block rounded-full gradient-pink-gold py-3 text-center font-semibold text-white shadow-md transition hover:scale-[1.02]">Quero esse</a>
+              <a href="https://mylove7.pay.yampi.com.br/r/GH61DX22LY" target="_blank" rel="noopener noreferrer" className="block rounded-full gradient-pink-gold py-3 text-center font-semibold text-white shadow-md transition hover:scale-[1.02]">Quero esse</a>
             </div>
 
             <div className="relative card-soft p-8" style={{ border: "2px solid #D4AF37", boxShadow: "0 8px 40px rgba(212,175,55,0.2)" }}>
               <span className="absolute -top-4 left-1/2 -translate-x-1/2 rounded-full px-4 py-1 text-xs font-bold text-white" style={{ background: "#D4AF37" }}>Mais Escolhido 🦢</span>
               <h3 className="mb-2 font-display text-2xl font-bold text-dark">Para Sempre</h3>
               <p className="mb-6 text-sm text-muted-foreground">A história que dura para sempre.</p>
-              <div className="mb-6 font-display text-5xl font-bold text-dark">R$49<span className="text-2xl">,90</span></div>
+              <div className="mb-6 font-display text-5xl font-bold text-dark">R$39<span className="text-2xl">,90</span></div>
               <ul className="mb-8 space-y-2 text-sm" style={{ color: "#555" }}>
                 <li>✦ Tudo do plano básico</li>
                 <li>✦ Linha do tempo completa</li>
@@ -198,7 +245,7 @@ const Index = () => {
                 <li>✦ Link vitalício</li>
               </ul>
               <div className="flex items-center gap-4">
-                <a href="https://mylove7.pay.yampi.com.br/checkout?skipToCheckout=1&tokenReference=FNDL52RTGI" target="_blank" rel="noopener noreferrer" className="block flex-1 rounded-full gradient-pink-gold py-3 text-center font-semibold text-white shadow-md transition hover:scale-[1.02]">Quero para sempre</a>
+                <a href="https://mylove7.pay.yampi.com.br/r/FNDL52RTGI" target="_blank" rel="noopener noreferrer" className="block flex-1 rounded-full gradient-pink-gold py-3 text-center font-semibold text-white shadow-md transition hover:scale-[1.02]">Quero para sempre</a>
                 <img src={cisyCoracao} alt="" className="hidden w-[100px] md:block" />
               </div>
             </div>
