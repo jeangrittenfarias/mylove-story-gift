@@ -5,7 +5,7 @@ import { format, differenceInDays } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import SkyBackground from "@/components/SkyBackground";
 import { supabase } from "@/integrations/supabase/client";
-import { searchTracks, getSpotifyToken, type SpotifyTrack } from "@/integrations/spotify/client";
+import { searchTracks, getSpotifyToken, loginWithSpotify, type SpotifyTrack } from "@/integrations/spotify/client";
 import cisyAcenando from "@/assets/cisy-acenando.png";
 import cisyPensando from "@/assets/cisy-pensando.png";
 import cisyEmpolgada from "@/assets/cisy-empolgada.png";
@@ -336,20 +336,35 @@ const Criar = () => {
                 <h2 className="mb-2 font-display text-2xl font-bold text-dark md:text-3xl">Qual música representa essa história?</h2>
                 <p className="mb-6 text-sm" style={{ color: "#999" }}>Busque no Spotify ou escolha entre as populares</p>
 
-                <div className="relative mb-4">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2">🎵</span>
-                  <input
-                    value={songSearch}
-                    onChange={(e) => setSongSearch(e.target.value)}
-                    placeholder="Buscar música no Spotify..."
-                    className="w-full rounded-xl border bg-white py-3 pl-10 pr-4 text-sm outline-none transition focus:border-pink-400"
-                    style={{ borderColor: "rgba(232,69,107,0.2)" }}
-                  />
-                  {searchingSpotify && <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs" style={{ color: "#999" }}>buscando...</span>}
-                </div>
+                {!spotifyToken && (
+                  <button
+                    type="button"
+                    onClick={loginWithSpotify}
+                    className="mb-6 w-full rounded-xl py-3 font-semibold transition hover:scale-[1.02]"
+                    style={{ background: "#1DB954", color: "white" }}
+                  >
+                    🎵 Conectar com Spotify para buscar
+                  </button>
+                )}
+
+                {spotifyToken ? (
+                  <div className="relative mb-4">
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2">🎵</span>
+                    <input
+                      value={songSearch}
+                      onChange={(e) => setSongSearch(e.target.value)}
+                      placeholder="Buscar música no Spotify..."
+                      className="w-full rounded-xl border bg-white py-3 pl-10 pr-4 text-sm outline-none transition focus:border-pink-400"
+                      style={{ borderColor: "rgba(232,69,107,0.2)" }}
+                    />
+                    {searchingSpotify && <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs" style={{ color: "#999" }}>buscando...</span>}
+                  </div>
+                ) : (
+                  <p className="mb-4 text-xs text-center" style={{ color: "#999" }}>Conecte com Spotify para buscar músicas em tempo real</p>
+                )}
 
                 {/* Spotify Results */}
-                {spotifyResults.length > 0 && (
+                {spotifyToken && spotifyResults.length > 0 && (
                   <div className="mb-6 border-t pt-4" style={{ borderColor: "rgba(232,69,107,0.2)" }}>
                     <p className="mb-3 text-xs font-semibold uppercase" style={{ color: "#999" }}>Resultados do Spotify</p>
                     <div className="max-h-64 space-y-2 overflow-y-auto pr-1">
