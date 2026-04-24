@@ -72,6 +72,22 @@ const Retro = () => {
     );
   }
 
+  const SONGS = [
+    { name: "Perfect", artist: "Ed Sheeran", color: "from-pink-400 to-rose-600" },
+    { name: "Die With A Smile", artist: "Lady Gaga & Bruno Mars", color: "from-amber-400 to-pink-500" },
+    { name: "A Thousand Years", artist: "Christina Perri", color: "from-purple-400 to-pink-400" },
+    { name: "Lover", artist: "Taylor Swift", color: "from-rose-300 to-pink-500" },
+    { name: "All of Me", artist: "John Legend", color: "from-yellow-400 to-orange-500" },
+    { name: "High School Sweethearts", artist: "Melanie Martinez", color: "from-pink-300 to-purple-500" },
+    { name: "Tudo Que Você Quiser", artist: "Lagum", color: "from-blue-400 to-pink-400" },
+    { name: "Te Amo Mais", artist: "Projota", color: "from-emerald-400 to-teal-500" },
+  ];
+
+  const songColor = (() => {
+    const found = SONGS.find(s => s.name === data.song_name && s.artist === data.song_artist);
+    return found?.color || "from-pink-400 to-rose-600";
+  })();
+
   const counter = (() => {
     if (!data.start_date) return null;
     const days = differenceInDays(new Date(), new Date(data.start_date));
@@ -127,7 +143,7 @@ const Retro = () => {
         {data.song_name && (
           <RevealCard>
             <div className="flex items-center gap-4 p-6" style={{ background: "#1A1A2E", borderRadius: 24 }}>
-              <div className="h-20 w-20 shrink-0 rounded-md bg-gradient-to-br from-pink-400 via-rose-500 to-amber-500" />
+              <div className={`h-20 w-20 shrink-0 rounded-md bg-gradient-to-br ${songColor}`} />
               <div className="flex-1 min-w-0">
                 <div className="font-display text-lg font-bold truncate" style={{ color: "#D4AF37" }}>{data.song_name}</div>
                 <div className="text-xs truncate" style={{ color: "rgba(255,255,255,0.6)" }}>{data.song_artist}</div>
