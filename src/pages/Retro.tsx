@@ -11,10 +11,13 @@ interface Retro {
   id: string;
   title: string | null;
   relationship_type: string | null;
+  relationship_label: string | null;
+  sender_name: string | null;
+  receiver_name: string | null;
   song_name: string | null;
   song_artist: string | null;
   message: string | null;
-  photos: string[] | null;
+  photo_urls: string[] | null;
   start_date: string | null;
   created_at: string;
 }
@@ -101,9 +104,19 @@ const Retro = () => {
             <h1 className="font-display text-3xl font-bold md:text-5xl" style={{ color: "#D4AF37" }}>
               {data.title}
             </h1>
-            {data.relationship_type && (
-              <p className="mt-4 text-sm capitalize" style={{ color: "rgba(255,255,255,0.6)" }}>
-                Presente {data.relationship_type === "love" ? "de Amor" : data.relationship_type === "friend" ? "para Amiga" : `para ${data.relationship_type}`}
+            {data.sender_name && data.receiver_name && (
+              <p className="mt-4 text-sm" style={{ color: "rgba(255,255,255,0.7)" }}>
+                De: <span className="font-semibold">{data.sender_name}</span>
+              </p>
+            )}
+            {data.receiver_name && (
+              <p className="text-sm" style={{ color: "rgba(255,255,255,0.7)" }}>
+                Para: <span className="font-semibold">{data.receiver_name}</span>
+              </p>
+            )}
+            {data.relationship_label && (
+              <p className="mt-3 text-xs uppercase tracking-wider" style={{ color: "#E8456B" }}>
+                {data.relationship_label}
               </p>
             )}
             <img src={cisyComemorando} alt="" className="absolute -bottom-2 right-2 w-[110px] opacity-90" />
@@ -163,12 +176,12 @@ const Retro = () => {
         )}
 
         {/* GALLERY */}
-        {data.photos && data.photos.length > 0 && (
+        {data.photo_urls && data.photo_urls.length > 0 && (
           <RevealCard>
             <div className="card-soft p-8" style={{ borderRadius: 24 }}>
               <h2 className="mb-6 text-center font-display text-2xl font-bold text-dark">Nossos momentos</h2>
               <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
-                {data.photos.map((url, i) => (
+                {data.photo_urls.map((url, i) => (
                   <div key={i} className="overflow-hidden rounded-xl shadow-md" style={{ transform: `rotate(${i % 2 === 0 ? -1.5 : 1.5}deg)` }}>
                     <img src={url} alt="" className="aspect-square w-full object-cover" />
                   </div>

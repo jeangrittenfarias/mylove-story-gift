@@ -47,6 +47,7 @@ const Criar = () => {
   const [loading, setLoading] = useState(false);
 
   const [relationshipType, setRelationshipType] = useState<RelType | string>("");
+  const [relationshipLabel, setRelationshipLabel] = useState("");
   const [senderName, setSenderName] = useState("");
   const [receiverName, setReceiverName] = useState("");
   const [title, setTitle] = useState("");
@@ -101,6 +102,7 @@ const Criar = () => {
         .from("retrospectives")
         .insert({
           relationship_type: relationshipType,
+          relationship_label: relationshipLabel,
           sender_name: senderName,
           receiver_name: receiverName,
           title,
@@ -164,15 +166,18 @@ const Criar = () => {
 
                 <div className="mb-6 grid gap-3 sm:grid-cols-2">
                   {[
-                    { id: "love", emoji: "💕", title: "Presente de Amor", sub: "Para namorado(a) ou cônjuge", badge: "Mais popular" },
-                    { id: "friend", emoji: "🤍", title: "Presente para Amiga", sub: "Surpreenda sua melhor amiga" },
+                    { id: "love", label: "Namorado(a)", emoji: "💕", title: "Presente de Amor", sub: "Para namorado(a) ou cônjuge", badge: "Mais popular" },
+                    { id: "friend", label: "Melhor amiga", emoji: "🤍", title: "Presente para Amiga", sub: "Surpreenda sua melhor amiga" },
                   ].map((opt) => {
                     const selected = relationshipType === opt.id;
                     return (
                       <button
                         key={opt.id}
                         type="button"
-                        onClick={() => setRelationshipType(opt.id)}
+                        onClick={() => {
+                          setRelationshipType(opt.id);
+                          setRelationshipLabel(opt.label);
+                        }}
                         className="relative rounded-2xl p-5 text-left transition hover:scale-[1.02]"
                         style={{
                           border: selected ? "2px solid #E8456B" : "1px solid rgba(232,69,107,0.15)",
@@ -201,7 +206,10 @@ const Criar = () => {
                       <button
                         key={t}
                         type="button"
-                        onClick={() => setRelationshipType(t.toLowerCase())}
+                        onClick={() => {
+                          setRelationshipType(t.toLowerCase());
+                          setRelationshipLabel(t);
+                        }}
                         className="rounded-full px-4 py-1.5 text-sm transition"
                         style={{
                           border: "1px solid #E8456B",
