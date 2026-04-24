@@ -17,36 +17,54 @@ export type Database = {
       retrospectives: {
         Row: {
           created_at: string
-          favorite_memory: string
-          how_met: string
+          favorite_memory: string | null
+          how_met: string | null
           id: string
-          meaning: string
-          one_word: string
+          meaning: string | null
+          message: string | null
+          one_word: string | null
           photos: string[] | null
-          receiver_name: string
-          sender_name: string
+          receiver_name: string | null
+          relationship_type: string | null
+          sender_name: string | null
+          song_artist: string | null
+          song_name: string | null
+          start_date: string | null
+          title: string | null
         }
         Insert: {
           created_at?: string
-          favorite_memory: string
-          how_met: string
+          favorite_memory?: string | null
+          how_met?: string | null
           id?: string
-          meaning: string
-          one_word: string
+          meaning?: string | null
+          message?: string | null
+          one_word?: string | null
           photos?: string[] | null
-          receiver_name: string
-          sender_name: string
+          receiver_name?: string | null
+          relationship_type?: string | null
+          sender_name?: string | null
+          song_artist?: string | null
+          song_name?: string | null
+          start_date?: string | null
+          title?: string | null
         }
         Update: {
           created_at?: string
-          favorite_memory?: string
-          how_met?: string
+          favorite_memory?: string | null
+          how_met?: string | null
           id?: string
-          meaning?: string
-          one_word?: string
+          meaning?: string | null
+          message?: string | null
+          one_word?: string | null
           photos?: string[] | null
-          receiver_name?: string
-          sender_name?: string
+          receiver_name?: string | null
+          relationship_type?: string | null
+          sender_name?: string | null
+          song_artist?: string | null
+          song_name?: string | null
+          start_date?: string | null
+          title?: string | null
         }
         Relationships: []
       }
