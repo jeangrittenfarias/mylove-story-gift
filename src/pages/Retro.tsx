@@ -16,6 +16,8 @@ interface Retro {
   receiver_name: string | null;
   song_name: string | null;
   song_artist: string | null;
+  song_uri: string | null;
+  song_image: string | null;
   message: string | null;
   photo_urls: string[] | null;
   start_date: string | null;
@@ -143,7 +145,11 @@ const Retro = () => {
         {data.song_name && (
           <RevealCard>
             <div className="flex items-center gap-4 p-6" style={{ background: "#1A1A2E", borderRadius: 24 }}>
-              <div className={`h-20 w-20 shrink-0 rounded-md bg-gradient-to-br ${songColor}`} />
+              {data.song_image ? (
+                <img src={data.song_image} alt="" className="h-20 w-20 shrink-0 rounded-md object-cover shadow-lg" />
+              ) : (
+                <div className={`h-20 w-20 shrink-0 rounded-md bg-gradient-to-br ${songColor}`} />
+              )}
               <div className="flex-1 min-w-0">
                 <div className="font-display text-lg font-bold truncate" style={{ color: "#D4AF37" }}>{data.song_name}</div>
                 <div className="text-xs truncate" style={{ color: "rgba(255,255,255,0.6)" }}>{data.song_artist}</div>

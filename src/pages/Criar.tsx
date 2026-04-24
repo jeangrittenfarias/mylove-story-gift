@@ -1,10 +1,11 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { format, differenceInDays } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import SkyBackground from "@/components/SkyBackground";
 import { supabase } from "@/integrations/supabase/client";
+import { searchTracks, getSpotifyToken, type SpotifyTrack } from "@/integrations/spotify/client";
 import cisyAcenando from "@/assets/cisy-acenando.png";
 import cisyPensando from "@/assets/cisy-pensando.png";
 import cisyEmpolgada from "@/assets/cisy-empolgada.png";
@@ -52,7 +53,11 @@ const Criar = () => {
   const [receiverName, setReceiverName] = useState("");
   const [title, setTitle] = useState("");
   const [song, setSong] = useState<typeof SONGS[number] | null>(null);
+  const [spotifyTrack, setSpotifyTrack] = useState<SpotifyTrack | null>(null);
   const [songSearch, setSongSearch] = useState("");
+  const [spotifyResults, setSpotifyResults] = useState<SpotifyTrack[]>([]);
+  const [spotifyToken, setSpotifyToken] = useState<string | null>(null);
+  const [searchingSpotify, setSearchingSpotify] = useState(false);
   const [customSongName, setCustomSongName] = useState("");
   const [customSongArtist, setCustomSongArtist] = useState("");
   const [message, setMessage] = useState("");
@@ -61,6 +66,31 @@ const Criar = () => {
 
   const totalSteps = 6;
   const progress = (step / totalSteps) * 100;
+
+  // Check for Spotify token on mount
+  useEffect(() => {
+    const token = getSpotifyToken();
+    if (token) {
+      setSpotifyToken(token);
+    }
+  }, []);
+
+  // Search Spotify tracks
+  useEffect(() => {
+    if (!songSearch.trim() || !spotifyToken) {
+      setSpotifyResults([]);
+      return;
+    }
+
+    const delayTimer = setTimeout(async () => {
+      setSearchingSpotify(true);
+      const results = await searchTracks(songSearch, spotifyToken);
+      setSpotifyResults(results);
+      setSearchingSpotify(false);
+    }, 500);
+
+    return () => clearTimeout(delayTimer);
+  }, [songSearch, spotifyToken]);
 
   const filteredSongs = useMemo(
     () => SONGS.filter((s) => `${s.name} ${s.artist}`.toLowerCase().includes(songSearch.toLowerCase())),
@@ -108,8 +138,10 @@ const Criar = () => {
           sender_name: senderName,
           receiver_name: receiverName,
           title,
-          song_name: customSongName.trim() || song?.name || null,
-          song_artist: customSongArtist.trim() || song?.artist || null,
+          song_name: customSongName.trim() || spotifyTrack?.name || song?.name || null,
+          song_artist: customSongArtist.trim() || spotifyTrack?.artist || song?.artist || null,
+          song_uri: spotifyTrack?.uri || null,
+          song_image: spotifyTrack?.image || null,
           message,
           photo_urls: photoUrls,
           start_date: startDate,
@@ -302,69 +334,91 @@ const Criar = () => {
             {step === 4 && (
               <div className="pr-24">
                 <h2 className="mb-2 font-display text-2xl font-bold text-dark md:text-3xl">Qual música representa essa história?</h2>
-                <p className="mb-6 text-sm" style={{ color: "#999" }}>Escolha a trilha sonora do presente</p>
+                <p className="mb-6 text-sm" style={{ color: "#999" }}>Busque no Spotify ou escolha entre as populares</p>
 
                 <div className="relative mb-4">
                   <span className="absolute left-3 top-1/2 -translate-y-1/2">🎵</span>
                   <input
                     value={songSearch}
                     onChange={(e) => setSongSearch(e.target.value)}
-                    placeholder="Buscar música..."
+                    placeholder="Buscar música no Spotify..."
                     className="w-full rounded-xl border bg-white py-3 pl-10 pr-4 text-sm outline-none transition focus:border-pink-400"
                     style={{ borderColor: "rgba(232,69,107,0.2)" }}
                   />
+                  {searchingSpotify && <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs" style={{ color: "#999" }}>buscando...</span>}
                 </div>
 
-                <div className="max-h-64 space-y-2 overflow-y-auto pr-1">
-                  {filteredSongs.map((s) => {
-                    const selected = song?.name === s.name;
-                    return (
-                      <button
-                        key={s.name}
-                        type="button"
-                        onClick={() => setSong(s)}
-                        className={`flex w-full items-center gap-3 rounded-xl p-3 text-left transition ${selected ? "" : "hover:bg-pink-50/50"}`}
-                        style={{
-                          background: selected ? "#FFF0F3" : "#fff",
-                          borderLeft: selected ? "3px solid #E8456B" : "3px solid transparent",
-                          border: selected ? undefined : "1px solid rgba(232,69,107,0.1)",
-                        }}
-                      >
-                        <div className={`h-12 w-12 rounded-md bg-gradient-to-br ${s.color}`} />
-                        <div className="flex-1">
-                          <div className="text-sm font-bold text-dark">{s.name}</div>
-                          <div className="text-xs" style={{ color: "#999" }}>{s.artist}</div>
-                        </div>
-                        <div className="text-xs" style={{ color: "#999" }}>{s.duration}</div>
-                      </button>
-                    );
-                  })}
-                </div>
-
-                <div className="mt-6 border-t pt-6" style={{ borderColor: "rgba(232,69,107,0.2)" }}>
-                  <p className="mb-4 text-xs font-semibold uppercase" style={{ color: "#999" }}>Ou adicione outra música</p>
-                  <div className="mb-3">
-                    <input
-                      value={customSongName}
-                      onChange={(e) => setCustomSongName(e.target.value)}
-                      placeholder="Nome da música"
-                      className="w-full rounded-xl border bg-white px-4 py-2.5 text-sm outline-none transition focus:border-pink-400"
-                      style={{ borderColor: "rgba(232,69,107,0.2)", color: "#1A1A2E" }}
-                    />
+                {/* Spotify Results */}
+                {spotifyResults.length > 0 && (
+                  <div className="mb-6 border-t pt-4" style={{ borderColor: "rgba(232,69,107,0.2)" }}>
+                    <p className="mb-3 text-xs font-semibold uppercase" style={{ color: "#999" }}>Resultados do Spotify</p>
+                    <div className="max-h-64 space-y-2 overflow-y-auto pr-1">
+                      {spotifyResults.map((track) => {
+                        const selected = spotifyTrack?.id === track.id;
+                        return (
+                          <button
+                            key={track.id}
+                            type="button"
+                            onClick={() => setSpotifyTrack(track)}
+                            className={`flex w-full items-center gap-3 rounded-xl p-3 text-left transition`}
+                            style={{
+                              background: selected ? "#FFF0F3" : "#fff",
+                              borderLeft: selected ? "3px solid #E8456B" : "3px solid transparent",
+                              border: selected ? undefined : "1px solid rgba(232,69,107,0.1)",
+                            }}
+                          >
+                            {track.image ? (
+                              <img src={track.image} alt="" className="h-12 w-12 rounded-md object-cover" />
+                            ) : (
+                              <div className="h-12 w-12 rounded-md bg-gradient-to-br from-pink-400 to-rose-600" />
+                            )}
+                            <div className="flex-1 min-w-0">
+                              <div className="text-sm font-bold text-dark truncate">{track.name}</div>
+                              <div className="text-xs truncate" style={{ color: "#999" }}>{track.artist}</div>
+                            </div>
+                            <div className="text-xs" style={{ color: "#999" }}>
+                              {Math.floor(track.duration / 60000)}:{String(Math.floor((track.duration % 60000) / 1000)).padStart(2, "0")}
+                            </div>
+                          </button>
+                        );
+                      })}
+                    </div>
                   </div>
-                  <div className="mb-3">
-                    <input
-                      value={customSongArtist}
-                      onChange={(e) => setCustomSongArtist(e.target.value)}
-                      placeholder="Nome do artista"
-                      className="w-full rounded-xl border bg-white px-4 py-2.5 text-sm outline-none transition focus:border-pink-400"
-                      style={{ borderColor: "rgba(232,69,107,0.2)", color: "#1A1A2E" }}
-                    />
-                  </div>
-                  <p className="text-xs" style={{ color: "#999" }}>💡 Integração Spotify em breve! Por enquanto, adicione manualmente.</p>
-                </div>
+                )}
 
-                <button type="button" onClick={() => next()} className="mt-6 text-xs underline" style={{ color: "#999" }}>
+                {/* Populares */}
+                {!songSearch && (
+                  <>
+                    <p className="mb-3 text-xs font-semibold uppercase" style={{ color: "#999" }}>Músicas populares</p>
+                    <div className="max-h-64 space-y-2 overflow-y-auto pr-1 mb-6">
+                      {filteredSongs.map((s) => {
+                        const selected = song?.name === s.name;
+                        return (
+                          <button
+                            key={s.name}
+                            type="button"
+                            onClick={() => { setSong(s); setSpotifyTrack(null); }}
+                            className={`flex w-full items-center gap-3 rounded-xl p-3 text-left transition ${selected ? "" : "hover:bg-pink-50/50"}`}
+                            style={{
+                              background: selected ? "#FFF0F3" : "#fff",
+                              borderLeft: selected ? "3px solid #E8456B" : "3px solid transparent",
+                              border: selected ? undefined : "1px solid rgba(232,69,107,0.1)",
+                            }}
+                          >
+                            <div className={`h-12 w-12 rounded-md bg-gradient-to-br ${s.color}`} />
+                            <div className="flex-1">
+                              <div className="text-sm font-bold text-dark">{s.name}</div>
+                              <div className="text-xs" style={{ color: "#999" }}>{s.artist}</div>
+                            </div>
+                            <div className="text-xs" style={{ color: "#999" }}>{s.duration}</div>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </>
+                )}
+
+                <button type="button" onClick={() => next()} className="text-xs underline" style={{ color: "#999" }}>
                   Pular esta etapa
                 </button>
               </div>
