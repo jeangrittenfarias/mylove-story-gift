@@ -5,38 +5,41 @@
 @layer base {
   :root {
     --background: 340 100% 97%;
-    --foreground: 240 20% 15%;
+    --foreground: 240 33% 14%;
 
     --card: 0 0% 100%;
-    --card-foreground: 240 20% 15%;
+    --card-foreground: 240 33% 14%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 240 20% 15%;
+    --popover-foreground: 240 33% 14%;
 
     --primary: 349 77% 59%;
     --primary-foreground: 0 0% 100%;
 
     --secondary: 340 100% 97%;
-    --secondary-foreground: 240 20% 15%;
+    --secondary-foreground: 240 33% 14%;
 
-    --muted: 340 30% 92%;
-    --muted-foreground: 240 10% 46%;
+    --muted: 340 30% 94%;
+    --muted-foreground: 240 8% 40%;
 
-    --accent: 43 76% 52%;
-    --accent-foreground: 240 20% 15%;
+    --accent: 43 65% 52%;
+    --accent-foreground: 240 33% 14%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 340 30% 88%;
-    --input: 340 30% 88%;
+    --border: 349 60% 90%;
+    --input: 349 60% 90%;
     --ring: 349 77% 59%;
 
-    --radius: 0.75rem;
+    --radius: 1rem;
 
-    --gold: 43 76% 52%;
+    --gold: 43 65% 52%;
     --blush: 340 100% 97%;
     --dark: 240 33% 14%;
+    --sky-day: 205 86% 94%;
+    --sky-mid: 200 84% 87%;
+    --sky-deep: 197 65% 69%;
 
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 240 5.3% 26.1%;
@@ -47,36 +50,6 @@
     --sidebar-border: 220 13% 91%;
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
-
-  .dark {
-    --background: 240 33% 14%;
-    --foreground: 340 100% 97%;
-
-    --card: 240 30% 18%;
-    --card-foreground: 340 100% 97%;
-
-    --popover: 240 30% 18%;
-    --popover-foreground: 340 100% 97%;
-
-    --primary: 349 77% 59%;
-    --primary-foreground: 0 0% 100%;
-
-    --secondary: 240 30% 22%;
-    --secondary-foreground: 340 100% 97%;
-
-    --muted: 240 30% 22%;
-    --muted-foreground: 340 30% 70%;
-
-    --accent: 43 76% 52%;
-    --accent-foreground: 0 0% 100%;
-
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 100%;
-
-    --border: 240 30% 22%;
-    --input: 240 30% 22%;
-    --ring: 349 77% 59%;
-  }
 }
 
 @layer base {
@@ -84,12 +57,186 @@
     @apply border-border;
   }
 
+  html, body, #root {
+    min-height: 100%;
+  }
+
   body {
-    @apply bg-background text-foreground;
+    @apply text-foreground;
     font-family: 'DM Sans', sans-serif;
+    background: linear-gradient(180deg, #FFF0F3 0%, #E8F4FD 50%, #C5E8FA 100%);
+    background-attachment: fixed;
+    background-size: 100% 100%;
   }
 
   h1, h2, h3, h4, h5, h6 {
     font-family: 'Playfair Display', serif;
   }
+}
+
+@layer utilities {
+  .font-display { font-family: 'Playfair Display', serif; }
+  .font-body { font-family: 'DM Sans', sans-serif; }
+
+  .gradient-pink-gold {
+    background: linear-gradient(135deg, #E8456B 0%, #D4AF37 100%);
+  }
+
+  .text-gradient-pink-gold {
+    background: linear-gradient(135deg, #E8456B 0%, #D4AF37 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .wavy-underline {
+    text-decoration: underline wavy #E8456B;
+    text-underline-offset: 8px;
+    text-decoration-thickness: 2px;
+  }
+
+  .card-soft {
+    background: #ffffff;
+    border: 1px solid rgba(232, 69, 107, 0.15);
+    border-radius: 20px;
+    box-shadow: 0 8px 30px rgba(232, 69, 107, 0.08);
+  }
+}
+
+/* === BACKGROUND ANIMATIONS === */
+
+.bg-decor {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 0;
+}
+
+/* Clouds */
+.cloud {
+  position: absolute;
+  background: #fff;
+  border-radius: 100px;
+  opacity: 0.7;
+  filter: blur(0.3px);
+}
+.cloud::before,
+.cloud::after {
+  content: '';
+  position: absolute;
+  background: #fff;
+  border-radius: 50%;
+}
+.cloud-1 { width: 120px; height: 30px; top: 10%; left: -200px; animation: drift 50s linear infinite; }
+.cloud-1::before { width: 60px; height: 60px; top: -25px; left: 15px; }
+.cloud-1::after  { width: 80px; height: 80px; top: -40px; left: 50px; }
+
+.cloud-2 { width: 90px; height: 22px; top: 30%; left: -200px; animation: drift 70s linear infinite; animation-delay: -15s; }
+.cloud-2::before { width: 45px; height: 45px; top: -20px; left: 12px; }
+.cloud-2::after  { width: 60px; height: 60px; top: -30px; left: 38px; }
+
+.cloud-3 { width: 140px; height: 35px; top: 55%; left: -200px; animation: drift 60s linear infinite; animation-delay: -30s; opacity: 0.5; }
+.cloud-3::before { width: 70px; height: 70px; top: -30px; left: 18px; }
+.cloud-3::after  { width: 95px; height: 95px; top: -50px; left: 60px; }
+
+.cloud-4 { width: 100px; height: 25px; top: 75%; left: -200px; animation: drift 80s linear infinite; animation-delay: -45s; opacity: 0.6; }
+.cloud-4::before { width: 50px; height: 50px; top: -22px; left: 14px; }
+.cloud-4::after  { width: 70px; height: 70px; top: -35px; left: 42px; }
+
+@keyframes drift {
+  from { transform: translateX(0); }
+  to   { transform: translateX(calc(100vw + 400px)); }
+}
+
+/* Floating hearts */
+.heart {
+  position: absolute;
+  bottom: -20px;
+  font-size: 14px;
+  color: #E8456B;
+  opacity: 0;
+  animation: rise 12s linear infinite;
+}
+.heart.gold { color: #D4AF37; }
+.heart-1 { left: 5%;  font-size: 12px; animation-duration: 10s; animation-delay: 0s; }
+.heart-2 { left: 18%; font-size: 16px; animation-duration: 14s; animation-delay: 2s; }
+.heart-3 { left: 32%; font-size: 10px; animation-duration: 9s;  animation-delay: 4s; }
+.heart-4 { left: 48%; font-size: 14px; animation-duration: 13s; animation-delay: 1s; }
+.heart-5 { left: 62%; font-size: 12px; animation-duration: 11s; animation-delay: 6s; }
+.heart-6 { left: 75%; font-size: 16px; animation-duration: 15s; animation-delay: 3s; }
+.heart-7 { left: 86%; font-size: 10px; animation-duration: 10s; animation-delay: 5s; }
+.heart-8 { left: 95%; font-size: 13px; animation-duration: 12s; animation-delay: 7s; }
+
+@keyframes rise {
+  0%   { transform: translateY(0) rotate(0deg); opacity: 0; }
+  15%  { opacity: 1; }
+  100% { transform: translateY(-110vh) rotate(25deg); opacity: 0; }
+}
+
+/* Swans */
+.swan {
+  position: absolute;
+  opacity: 0.4;
+  animation: swan-fly 80s linear infinite;
+}
+.swan-1 { top: 18%; left: -150px; animation-duration: 90s; }
+.swan-2 { top: 60%; left: -150px; animation-duration: 110s; animation-delay: -40s; }
+.swan-wing {
+  display: inline-block;
+  transform-origin: center;
+  animation: wing-flap 2.5s ease-in-out infinite;
+}
+@keyframes swan-fly {
+  from { transform: translateX(0); }
+  to   { transform: translateX(calc(100vw + 300px)); }
+}
+@keyframes wing-flap {
+  0%, 100% { transform: scaleY(1); }
+  50%      { transform: scaleY(1.15); }
+}
+
+/* Cisy float */
+.cisy-float { animation: cisy-float 4s ease-in-out infinite; }
+@keyframes cisy-float {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-12px); }
+}
+
+.cisy-glow {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle, rgba(232,69,107,0.25) 0%, transparent 70%);
+  filter: blur(30px);
+  z-index: -1;
+}
+
+/* Loading dots */
+.loading-dots span {
+  display: inline-block;
+  width: 10px; height: 10px;
+  margin: 0 4px;
+  border-radius: 50%;
+  background: #E8456B;
+  animation: dot-pulse 1.4s ease-in-out infinite;
+}
+.loading-dots span:nth-child(2) { animation-delay: 0.2s; }
+.loading-dots span:nth-child(3) { animation-delay: 0.4s; }
+@keyframes dot-pulse {
+  0%, 80%, 100% { transform: scale(0.6); opacity: 0.4; }
+  40%           { transform: scale(1);   opacity: 1;   }
+}
+
+/* Waveform */
+.wave-bar {
+  display: inline-block;
+  width: 3px;
+  margin: 0 1px;
+  background: #D4AF37;
+  border-radius: 2px;
+  animation: wave 1.2s ease-in-out infinite;
+}
+@keyframes wave {
+  0%, 100% { height: 6px; }
+  50%      { height: 22px; }
 }
