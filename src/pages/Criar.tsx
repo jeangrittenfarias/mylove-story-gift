@@ -1,9 +1,10 @@
 import { useState, useMemo, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { format, differenceInDays } from "date-fns";
+import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import SkyBackground from "@/components/SkyBackground";
+import PreviewCard from "@/components/PreviewCard";
 import { supabase } from "@/integrations/supabase/client";
 import cisyAcenando from "@/assets/cisy-acenando.png";
 import cisyPensando from "@/assets/cisy-pensando.png";
