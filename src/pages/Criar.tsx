@@ -173,7 +173,8 @@ const Criar = () => {
     <div className="relative min-h-screen overflow-x-hidden px-4 py-8">
       <SkyBackground hearts={true} swans={false} clouds={true} />
 
-      <div className="relative z-10 mx-auto max-w-2xl">
+      <div className="relative z-10 mx-auto grid w-full max-w-6xl gap-8 lg:grid-cols-[minmax(0,1fr)_380px]">
+        <div>
         {/* Progress */}
         <div className="mb-6">
           <div className="mb-2 flex items-center justify-between text-xs" style={{ color: "#666" }}>
