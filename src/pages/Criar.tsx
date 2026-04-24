@@ -469,6 +469,19 @@ const Criar = () => {
             Iniciou em {format(new Date(startDate), "dd 'de' MMMM 'de' yyyy", { locale: ptBR })}
           </p>
         )}
+        </div>
+
+        {/* LIVE PREVIEW (right column on desktop) */}
+        <aside className="hidden lg:block">
+          <PreviewCard
+            title={title}
+            song={song}
+            message={message}
+            photos={photos}
+            counter={counter}
+            relationshipType={relationshipType}
+          />
+        </aside>
       </div>
     </div>
   );
