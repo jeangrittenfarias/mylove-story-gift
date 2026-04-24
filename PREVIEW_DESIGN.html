@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MyLove Story - Preview Design</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(180deg, #FFF0F3 0%, #E8F4FD 50%, #C5E8FA 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 50px;
+            color: #1A1A2E;
+            font-family: 'Playfair Display', serif;
+        }
+
+        /* ===== LAYOUT 2 COLUNAS ===== */
+        .criar-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 80px;
+        }
+
+        @media (max-width: 1024px) {
+            .criar-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* ===== LADO ESQUERDO - FORMULÁRIO ===== */
+        .form-section {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .progress-bar {
+            height: 6px;
+            background: rgba(232, 69, 107, 0.2);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #E8456B, #D4AF37);
+            width: 33%;
+            border-radius: 10px;
+            transition: width 0.3s ease;
+        }
+
+        .form-card {
+            background: white;
+            border: 1px solid rgba(232, 69, 107, 0.15);
+            border-radius: 24px;
+            padding: 30px;
+            box-shadow: 0 8px 30px rgba(232, 69, 107, 0.08);
+        }
+
+        .form-card h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            color: #1A1A2E;
+            margin-bottom: 8px;
+        }
+
+        .form-card p {
+            color: #999;
+            font-size: 0.9rem;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            font-size: 0.85rem;
+            color: #666;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            padding: 12px 16px;
+            border: 1px solid rgba(232, 69, 107, 0.2);
+            border-radius: 12px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #E8456B;
+            box-shadow: 0 0 0 3px rgba(232, 69, 107, 0.1);
+        }
+
+        .button-group {
+            display: flex;
+            gap: 12px;
+            margin-top: 30px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 14px 20px;
+            border: none;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.95rem;
+        }
+
+        .btn-back {
+            background: white;
+            color: #666;
+            border: 1px solid #ddd;
+        }
+
+        .btn-back:hover {
+            background: #f5f5f5;
+        }
+
+        .btn-next {
+            background: linear-gradient(135deg, #E8456B 0%, #D4AF37 100%);
+            color: white;
+            box-shadow: 0 8px 20px rgba(232, 69, 107, 0.3);
+        }
+
+        .btn-next:hover {
+            transform: scale(1.02);
+            box-shadow: 0 12px 30px rgba(232, 69, 107, 0.4);
+        }
+
+        .step-indicator {
+            font-size: 0.85rem;
+            color: #999;
+            margin-bottom: 15px;
+        }
+
+        /* ===== LADO DIREITO - PREVIEW CARD ===== */
+        .preview-section {
+            position: sticky;
+            top: 40px;
+        }
+
+        .preview-card {
+            border-radius: 28px;
+            padding: 32px;
+            min-height: 700px;
+            background: linear-gradient(135deg, #191414 0%, #2D2D2D 100%);
+            color: white;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Abstract shapes background */
+        .preview-card::before {
+            content: '';
+            position: absolute;
+            top: -100px;
+            right: -100px;
+            width: 300px;
+            height: 300px;
+            background: linear-gradient(135deg, #FF006E 0%, #FF0055 100%);
+            border-radius: 50%;
+            opacity: 0.1;
+            filter: blur(80px);
+        }
+
+        .preview-card::after {
+            content: '';
+            position: absolute;
+            bottom: -50px;
+            left: -100px;
+            width: 200px;
+            height: 200px;
+            background: linear-gradient(135deg, #00A8FF 0%, #0080FF 100%);
+            border-radius: 50%;
+            opacity: 0.1;
+            filter: blur(80px);
+        }
+
+        .preview-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .preview-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .preview-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            color: #D4AF37;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .preview-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: #D4AF37;
+            margin-bottom: 8px;
+            min-height: 60px;
+        }
+
+        .preview-subtitle {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .preview-card-item {
+            background: rgba(45, 45, 45, 0.6);
+            border: 1px solid rgba(29, 185, 84, 0.2);
+            border-radius: 16px;
+            padding: 16px;
+            backdrop-filter: blur(10px);
+        }
+
+        .preview-card-item-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #D4AF37;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .preview-card-item-content {
+            font-size: 0.95rem;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .preview-message {
+            background: rgba(232, 69, 107, 0.1);
+            border-left: 3px solid #E8456B;
+            border-radius: 12px;
+            padding: 16px;
+            font-style: italic;
+            font-size: 0.95rem;
+            color: rgba(255, 255, 255, 0.8);
+            line-height: 1.6;
+            min-height: 60px;
+        }
+
+        .preview-counter {
+            background: rgba(212, 175, 55, 0.1);
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .counter-number {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #E8456B;
+            line-height: 1;
+        }
+
+        .counter-label {
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.6);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 4px;
+        }
+
+        .counter-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 12px;
+            margin-top: 12px;
+        }
+
+        /* ===== SEÇÕES EXTRAS ===== */
+        .section-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            color: #1A1A2E;
+            margin: 80px 0 40px 0;
+            padding-top: 40px;
+            border-top: 2px solid rgba(232, 69, 107, 0.1);
+        }
+
+        /* Card de Mensagem */
+        .message-card {
+            background: linear-gradient(135deg, #E8456B 0%, #FF6B7A 100%);
+            border-radius: 28px;
+            padding: 32px;
+            color: white;
+            margin: 40px 0;
+            max-width: 600px;
+        }
+
+        .message-card-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+
+        .message-card-text {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            line-height: 1.6;
+            margin-bottom: 24px;
+            font-weight: 600;
+        }
+
+        .message-card-btn {
+            background: white;
+            color: #E8456B;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 24px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+        }
+
+        .message-card-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Grid de Cards */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin: 40px 0;
+        }
+
+        .card {
+            background: white;
+            border: 1px solid rgba(232, 69, 107, 0.15);
+            border-radius: 24px;
+            padding: 24px;
+            box-shadow: 0 8px 30px rgba(232, 69, 107, 0.08);
+            transition: all 0.3s;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 40px rgba(232, 69, 107, 0.15);
+        }
+
+        .card-icon {
+            font-size: 2rem;
+            margin-bottom: 12px;
+        }
+
+        .card-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.3rem;
+            color: #1A1A2E;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .card-text {
+            color: #666;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        /* Info Box */
+        .info-box {
+            background: #FFF0F3;
+            border-left: 4px solid #E8456B;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 40px 0;
+        }
+
+        .info-box-title {
+            font-weight: 700;
+            color: #E8456B;
+            margin-bottom: 8px;
+        }
+
+        .info-box-text {
+            color: #666;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎵 MyLove Story - Preview Design</h1>
+
+        <!-- ===== LAYOUT CRIAR.TSX ===== -->
+        <section>
+            <h2 class="section-title">1️⃣ Página /criar - Layout com Preview</h2>
+
+            <div class="criar-layout">
+                <!-- LADO ESQUERDO -->
+                <div class="form-section">
+                    <div class="step-indicator">Passo 1 de 6</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill"></div>
+                    </div>
+
+                    <div class="form-card">
+                        <h3>Que tipo de presente vamos criar?</h3>
+                        <p>Escolha o tipo de relacionamento</p>
+
+                        <div class="form-group">
+                            <label>Tipo de Presente</label>
+                            <button class="btn" style="text-align: left; background: #FFF0F3; border: 2px solid #E8456B; color: #1A1A2E; padding: 12px;">
+                                💕 Presente de Amor
+                            </button>
+                        </div>
+
+                        <div class="form-group">
+                            <button class="btn" style="text-align: left; background: white; border: 1px solid #ddd; color: #1A1A2E; padding: 12px;">
+                                🤍 Presente para Amiga
+                            </button>
+                        </div>
+
+                        <div class="button-group">
+                            <button class="btn btn-back">← Voltar</button>
+                            <button class="btn btn-next">Próximo →</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- LADO DIREITO - PREVIEW -->
+                <div class="preview-section">
+                    <div class="preview-card">
+                        <div class="preview-content">
+                            <div class="preview-header">
+                                <div class="preview-label">✦ MyLove Wrapped ✦</div>
+                                <div class="preview-title">Sua Retrospectiva</div>
+                                <div class="preview-subtitle">Presente de Amor</div>
+                            </div>
+
+                            <div class="preview-card-item">
+                                <div class="preview-card-item-label">🎵 Trilha Sonora</div>
+                                <div class="preview-card-item-content">
+                                    Escolha uma música...
+                                </div>
+                            </div>
+
+                            <div class="preview-card-item">
+                                <div class="preview-card-item-label">💬 Mensagem</div>
+                                <div class="preview-card-item-content">
+                                    Escreva uma mensagem...
+                                </div>
+                            </div>
+
+                            <div class="preview-counter">
+                                <div class="counter-grid">
+                                    <div>
+                                        <div class="counter-number">2</div>
+                                        <div class="counter-label">Anos</div>
+                                    </div>
+                                    <div>
+                                        <div class="counter-number">3</div>
+                                        <div class="counter-label">Meses</div>
+                                    </div>
+                                    <div>
+                                        <div class="counter-number">5</div>
+                                        <div class="counter-label">Dias</div>
+                                    </div>
+                                </div>
+                                <div class="counter-grid" style="margin-top: 8px;">
+                                    <div>
+                                        <div class="counter-number" style="font-size: 1.8rem;">14</div>
+                                        <div class="counter-label">Horas</div>
+                                    </div>
+                                    <div>
+                                        <div class="counter-number" style="font-size: 1.8rem;">32</div>
+                                        <div class="counter-label">Minutos</div>
+                                    </div>
+                                    <div>
+                                        <div class="counter-number" style="font-size: 1.8rem;">8</div>
+                                        <div class="counter-label">Segundos</div>
+                                    </div>
+                                </div>
+                                <div style="font-size: 0.9rem; color: rgba(255,255,255,0.6); margin-top: 16px;">
+                                    juntos até agora 🦢
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="info-box">
+                <div class="info-box-title">✅ O que você vê aqui:</div>
+                <div class="info-box-text">
+                    • <strong>Esquerda:</strong> Formulário com 6 steps (tipo Criar.tsx atual)<br>
+                    • <strong>Direita:</strong> Preview ao vivo que atualiza enquanto digita<br>
+                    • <strong>Design:</strong> Dark mode com gradientes (preto → rosa/roxo)<br>
+                    • <strong>Contador:</strong> Completo com horas/minutos/segundos<br>
+                    • <strong>Responsivo:</strong> Mobile coloca um em cima do outro
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== CARD DE MENSAGEM ===== -->
+        <section>
+            <h2 class="section-title">2️⃣ Card de Mensagem Especial</h2>
+
+            <div class="message-card">
+                <div class="message-card-label">Mensagem especial</div>
+                <div class="message-card-text">
+                    "A vida me levou por muitos caminhos, mas nenhum tão bonito quanto aquele que me trouxe até você."
+                </div>
+                <button class="message-card-btn">Mostrar Mensagem</button>
+            </div>
+
+            <div class="info-box">
+                <div class="info-box-title">✅ Características:</div>
+                <div class="info-box-text">
+                    • Fundo com gradiente rosa<br>
+                    • Texto grande e legível<br>
+                    • Botão interativo<br>
+                    • Aparece na página Retro.tsx
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== CARDS DE CONQUISTAS ===== -->
+        <section>
+            <h2 class="section-title">3️⃣ Card de Conquistas (Achievements)</h2>
+
+            <div class="cards-grid">
+                <div class="card">
+                    <div class="card-icon">∞</div>
+                    <div class="card-title">Amor Infinito</div>
+                    <div class="card-text">Mais de 1000 dias juntos</div>
+                </div>
+                <div class="card">
+                    <div class="card-icon">⭐</div>
+                    <div class="card-title">Momentos Memoráveis</div>
+                    <div class="card-text">10 fotos compartilhadas</div>
+                </div>
+                <div class="card">
+                    <div class="card-icon">🎵</div>
+                    <div class="card-title">Trilha Sonora</div>
+                    <div class="card-text">Música selecionada</div>
+                </div>
+                <div class="card">
+                    <div class="card-icon">💭</div>
+                    <div class="card-title">Sentimentos</div>
+                    <div class="card-text">Mensagem escrita</div>
+                </div>
+            </div>
+
+            <div class="info-box">
+                <div class="info-box-title">✅ Características:</div>
+                <div class="info-box-text">
+                    • Grid responsivo (4 por linha em desktop)<br>
+                    • Hover effect (sobe um pouco)<br>
+                    • Ícones grandes e expressivos<br>
+                    • Opcional para página Retro
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== RESUMO ===== -->
+        <section style="margin-top: 80px; padding: 40px; background: #FFF0F3; border-radius: 24px;">
+            <h2 style="font-family: 'Playfair Display', serif; color: #E8456B; margin-bottom: 20px;">
+                📋 Resumo do Design
+            </h2>
+
+            <div style="color: #1A1A2E; line-height: 2;">
+                <strong>✅ Layout Criar.tsx:</strong> Formulário + Preview (2 colunas)<br>
+                <strong>✅ Cores:</strong> Preto (#191414), Gradientes (rosa #E8456B, ouro #D4AF37, azul #00A8FF)<br>
+                <strong>✅ Tipografia:</strong> Playfair Display (títulos), DM Sans (corpo)<br>
+                <strong>✅ Componentes:</strong> Cards dark, gradientes, shadows, blur effects<br>
+                <strong>✅ Interatividade:</strong> Preview atualiza ao digitar<br>
+                <strong>✅ Contador:</strong> Anos, Meses, Dias, Horas, Minutos, Segundos<br>
+                <strong>✅ Responsivo:</strong> Mobile-first, adapta para tablets/desktop<br>
+            </div>
+
+            <div style="margin-top: 30px; padding: 20px; background: white; border-left: 4px solid #E8456B; border-radius: 8px;">
+                <strong style="color: #E8456B;">🚀 Próximo passo:</strong> Você aprova este design e eu implemento em React/Tailwind no seu projeto Lovable
+            </div>
+        </section>
+
+    </div>
+</body>
+</html>
