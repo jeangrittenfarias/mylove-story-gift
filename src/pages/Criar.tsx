@@ -66,25 +66,19 @@ const Criar = () => {
   const totalSteps = 6;
   const progress = (step / totalSteps) * 100;
 
-  // Debounced Spotify search
+  // Debounced Spotify search via edge function
   useEffect(() => {
     const q = songSearch.trim();
     if (!q) { setSongResults([]); return; }
     setSongLoading(true);
     const t = setTimeout(async () => {
       try {
-        const { data, error } = await supabase.functions.invoke("search-spotify", {
-          method: "GET" as any,
-          // pass query via body fallback; we'll also support GET via URL
-        });
-        // Fallback to direct fetch with query string (invoke doesn't support query easily)
         const url = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/search-spotify?q=${encodeURIComponent(q)}`;
         const res = await fetch(url, {
           headers: { Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}` },
         });
         const json = await res.json();
         setSongResults(json.tracks || []);
-        void data; void error;
       } catch (e) {
         console.error(e);
         setSongResults([]);
