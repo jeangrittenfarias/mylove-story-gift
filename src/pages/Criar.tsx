@@ -47,6 +47,8 @@ const Criar = () => {
   const [loading, setLoading] = useState(false);
 
   const [relationshipType, setRelationshipType] = useState<RelType | string>("");
+  const [senderName, setSenderName] = useState("");
+  const [receiverName, setReceiverName] = useState("");
   const [title, setTitle] = useState("");
   const [song, setSong] = useState<typeof SONGS[number] | null>(null);
   const [songSearch, setSongSearch] = useState("");
@@ -75,8 +77,9 @@ const Criar = () => {
 
   const canNext = () => {
     if (step === 1) return !!relationshipType;
-    if (step === 2) return title.trim().length > 0;
-    if (step === 4) return message.trim().length > 0;
+    if (step === 2) return senderName.trim().length > 0 && receiverName.trim().length > 0;
+    if (step === 3) return title.trim().length > 0;
+    if (step === 5) return message.trim().length > 0;
     if (step === 6) return !!startDate;
     return true;
   };
@@ -98,19 +101,14 @@ const Criar = () => {
         .from("retrospectives")
         .insert({
           relationship_type: relationshipType,
+          sender_name: senderName,
+          receiver_name: receiverName,
           title,
           song_name: song?.name || null,
           song_artist: song?.artist || null,
           message,
-          photos: photoUrls,
+          photo_urls: photoUrls,
           start_date: startDate,
-          // legacy required-ish placeholders kept harmless
-          sender_name: "",
-          receiver_name: "",
-          how_met: "",
-          favorite_memory: "",
-          meaning: message,
-          one_word: title,
         } as any)
         .select()
         .single();
@@ -221,8 +219,47 @@ const Criar = () => {
               </div>
             )}
 
-            {/* STEP 2 */}
+            {/* STEP 2 — NOMES */}
             {step === 2 && (
+              <div className="pr-24">
+                <h2 className="mb-2 font-display text-2xl font-bold text-dark md:text-3xl">Quem está presenteando quem?</h2>
+                <p className="mb-8 text-sm" style={{ color: "#999" }}>Adicione os nomes para personalizar</p>
+
+                <div className="mb-6 grid gap-4 sm:grid-cols-2">
+                  <div>
+                    <label className="mb-2 block text-xs font-semibold uppercase tracking-wider" style={{ color: "#999" }}>Seu nome</label>
+                    <input
+                      value={senderName}
+                      onChange={(e) => setSenderName(e.target.value)}
+                      placeholder="Seu nome aqui"
+                      className="w-full rounded-xl border bg-white px-4 py-3 outline-none transition focus:border-pink-400"
+                      style={{ borderColor: "rgba(232,69,107,0.2)", color: "#1A1A2E" }}
+                    />
+                  </div>
+                  <div>
+                    <label className="mb-2 block text-xs font-semibold uppercase tracking-wider" style={{ color: "#999" }}>Nome de quem vai receber</label>
+                    <input
+                      value={receiverName}
+                      onChange={(e) => setReceiverName(e.target.value)}
+                      placeholder="Nome deles"
+                      className="w-full rounded-xl border bg-white px-4 py-3 outline-none transition focus:border-pink-400"
+                      style={{ borderColor: "rgba(232,69,107,0.2)", color: "#1A1A2E" }}
+                    />
+                  </div>
+                </div>
+
+                {senderName && receiverName && (
+                  <div className="rounded-2xl p-6 text-center" style={{ background: "#1A1A2E" }}>
+                    <div className="text-sm" style={{ color: "#D4AF37" }}>De: <span className="font-semibold">{senderName}</span></div>
+                    <div className="my-2 text-2xl">🦢</div>
+                    <div className="text-sm" style={{ color: "#D4AF37" }}>Para: <span className="font-semibold">{receiverName}</span></div>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* STEP 3 — TÍTULO */}
+            {step === 3 && (
               <div className="pr-24">
                 <h2 className="mb-2 font-display text-2xl font-bold text-dark md:text-3xl">Qual o título do presente?</h2>
                 <p className="mb-8 text-sm" style={{ color: "#999" }}>Você poderá editar depois</p>
@@ -251,8 +288,8 @@ const Criar = () => {
               </div>
             )}
 
-            {/* STEP 3 */}
-            {step === 3 && (
+            {/* STEP 4 — MÚSICA */}
+            {step === 4 && (
               <div className="pr-24">
                 <h2 className="mb-2 font-display text-2xl font-bold text-dark md:text-3xl">Qual música representa essa história?</h2>
                 <p className="mb-6 text-sm" style={{ color: "#999" }}>Escolha a trilha sonora do presente</p>
@@ -300,8 +337,8 @@ const Criar = () => {
               </div>
             )}
 
-            {/* STEP 4 */}
-            {step === 4 && (
+            {/* STEP 5 — MENSAGEM */}
+            {step === 5 && (
               <div className="pr-24">
                 <h2 className="mb-2 font-display text-2xl font-bold text-dark md:text-3xl">Escreva uma mensagem inesquecível</h2>
                 <p className="mb-6 text-sm" style={{ color: "#999" }}>Para emocionar quem você ama</p>
@@ -322,11 +359,15 @@ const Criar = () => {
               </div>
             )}
 
-            {/* STEP 5 */}
-            {step === 5 && (
+            {/* STEP 6 — FOTOS E DATA */}
+            {step === 6 && (
               <div className="pr-24">
-                <h2 className="mb-2 font-display text-2xl font-bold text-dark md:text-3xl">Adicione as fotos de vocês</h2>
-                <p className="mb-6 text-sm" style={{ color: "#999" }}>Até 5 fotos · PNG, JPG até 5MB cada</p>
+                <h2 className="mb-2 font-display text-2xl font-bold text-dark md:text-3xl">Os últimos detalhes 🦢</h2>
+                <p className="mb-8 text-sm" style={{ color: "#999" }}>Fotos e a data que tudo começou</p>
+
+                <div className="mb-8">
+                  <h3 className="mb-3 text-sm font-semibold uppercase tracking-wider" style={{ color: "#999" }}>Adicione as fotos de vocês</h3>
+                  <p className="mb-4 text-xs" style={{ color: "#999" }}>Até 5 fotos · PNG, JPG até 5MB cada</p>
 
                 <label className="block cursor-pointer rounded-2xl border-2 border-dashed p-8 text-center transition hover:bg-pink-50/40" style={{ borderColor: "#E8456B" }}>
                   <input
@@ -346,47 +387,45 @@ const Criar = () => {
                   </div>
                 </label>
 
-                {photos.length > 0 && (
-                  <div className="mt-4 grid grid-cols-3 gap-2">
-                    {photos.map((p, i) => (
-                      <div key={i} className="relative aspect-square overflow-hidden rounded-xl">
-                        <img src={URL.createObjectURL(p)} alt="" className="h-full w-full object-cover" />
-                        <button type="button" onClick={() => setPhotos(photos.filter((_, idx) => idx !== i))} className="absolute right-1 top-1 flex h-6 w-6 items-center justify-center rounded-full bg-white/90 text-xs shadow">
-                          ✕
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* STEP 6 */}
-            {step === 6 && (
-              <div className="pr-24">
-                <h2 className="mb-2 font-display text-2xl font-bold text-dark md:text-3xl">Quando tudo começou?</h2>
-                <p className="mb-6 text-sm" style={{ color: "#999" }}>Usaremos para calcular o tempo juntos</p>
-
-                <label className="mb-2 block text-xs uppercase tracking-wider" style={{ color: "#999" }}>Data de início da história</label>
-                <input
-                  type="date"
-                  value={startDate}
-                  onChange={(e) => setStartDate(e.target.value)}
-                  className="w-full rounded-xl border bg-white px-4 py-3 font-display text-lg outline-none transition focus:border-pink-400"
-                  style={{ borderColor: "rgba(232,69,107,0.2)", color: "#1A1A2E" }}
-                  max={new Date().toISOString().split("T")[0]}
-                />
-
-                {counter && (
-                  <div className="mt-6 rounded-2xl p-6 text-center" style={{ background: "#FFF0F3" }}>
-                    <div className="font-display text-2xl font-bold md:text-3xl">
-                      <span style={{ color: "#E8456B" }}>{counter.years}</span> <span className="text-sm" style={{ color: "#999" }}>anos</span>{" "}
-                      <span style={{ color: "#E8456B" }}>{counter.months}</span> <span className="text-sm" style={{ color: "#999" }}>meses</span>{" "}
-                      <span style={{ color: "#E8456B" }}>{counter.days}</span> <span className="text-sm" style={{ color: "#999" }}>dias</span>
+                  {photos.length > 0 && (
+                    <div className="mt-4 grid grid-cols-3 gap-2">
+                      {photos.map((p, i) => (
+                        <div key={i} className="relative aspect-square overflow-hidden rounded-xl">
+                          <img src={URL.createObjectURL(p)} alt="" className="h-full w-full object-cover" />
+                          <button type="button" onClick={() => setPhotos(photos.filter((_, idx) => idx !== i))} className="absolute right-1 top-1 flex h-6 w-6 items-center justify-center rounded-full bg-white/90 text-xs shadow">
+                            ✕
+                          </button>
+                        </div>
+                      ))}
                     </div>
-                    <p className="mt-2 text-sm" style={{ color: "#666" }}>juntos até hoje 🦢</p>
-                  </div>
-                )}
+                  )}
+                </div>
+
+                <div className="mt-8 border-t pt-8" style={{ borderColor: "rgba(232,69,107,0.1)" }}>
+                  <h3 className="mb-3 text-sm font-semibold uppercase tracking-wider" style={{ color: "#999" }}>Quando tudo começou?</h3>
+                  <p className="mb-4 text-xs" style={{ color: "#999" }}>Usaremos para calcular o tempo juntos</p>
+
+                  <label className="mb-2 block text-xs font-semibold uppercase tracking-wider" style={{ color: "#999" }}>Data de início da história</label>
+                  <input
+                    type="date"
+                    value={startDate}
+                    onChange={(e) => setStartDate(e.target.value)}
+                    className="w-full rounded-xl border bg-white px-4 py-3 font-display text-lg outline-none transition focus:border-pink-400"
+                    style={{ borderColor: "rgba(232,69,107,0.2)", color: "#1A1A2E" }}
+                    max={new Date().toISOString().split("T")[0]}
+                  />
+
+                  {counter && (
+                    <div className="mt-6 rounded-2xl p-6 text-center" style={{ background: "#FFF0F3" }}>
+                      <div className="font-display text-2xl font-bold md:text-3xl">
+                        <span style={{ color: "#E8456B" }}>{counter.years}</span> <span className="text-sm" style={{ color: "#999" }}>anos</span>{" "}
+                        <span style={{ color: "#E8456B" }}>{counter.months}</span> <span className="text-sm" style={{ color: "#999" }}>meses</span>{" "}
+                        <span style={{ color: "#E8456B" }}>{counter.days}</span> <span className="text-sm" style={{ color: "#999" }}>dias</span>
+                      </div>
+                      <p className="mt-2 text-sm" style={{ color: "#666" }}>juntos até hoje 🦢</p>
+                    </div>
+                  )}
+                </div>
               </div>
             )}
 
@@ -412,7 +451,7 @@ const Criar = () => {
         </AnimatePresence>
 
         {startDate && step === 6 && (
-          <p className="mt-4 text-center text-xs" style={{ color: "#666" }}>
+          <p className="mt-4 text-center text-xs" style={{ color: "#999" }}>
             Iniciou em {format(new Date(startDate), "dd 'de' MMMM 'de' yyyy", { locale: ptBR })}
           </p>
         )}
