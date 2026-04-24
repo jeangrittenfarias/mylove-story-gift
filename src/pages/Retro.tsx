@@ -1,7 +1,7 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useMemo } from "react";
 import { useParams } from "react-router-dom";
 import { motion, useInView } from "framer-motion";
-import { differenceInDays, format } from "date-fns";
+import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import SkyBackground from "@/components/SkyBackground";
 import { supabase } from "@/integrations/supabase/client";
@@ -49,6 +49,28 @@ const Retro = () => {
     });
   }, [id]);
 
+  // Ticking clock for h/m/s in counter
+  const [now, setNow] = useState(() => new Date());
+  useEffect(() => {
+    const t = setInterval(() => setNow(new Date()), 1000);
+    return () => clearInterval(t);
+  }, []);
+
+  const counter = useMemo(() => {
+    if (!data?.start_date) return null;
+    const start = new Date(data.start_date);
+    const diff = now.getTime() - start.getTime();
+    if (diff < 0) return null;
+    const totalDays = Math.floor(diff / 86400000);
+    const years = Math.floor(totalDays / 365);
+    const months = Math.floor((totalDays % 365) / 30);
+    const days = totalDays - years * 365 - months * 30;
+    const hours = Math.floor((diff % 86400000) / 3600000);
+    const minutes = Math.floor((diff % 3600000) / 60000);
+    const seconds = Math.floor((diff % 60000) / 1000);
+    return { years, months, days, hours, minutes, seconds };
+  }, [data?.start_date, now]);
+
   if (loading) {
     return (
       <div className="relative flex min-h-screen items-center justify-center">
@@ -68,16 +90,6 @@ const Retro = () => {
       </div>
     );
   }
-
-  const counter = (() => {
-    if (!data.start_date) return null;
-    const days = differenceInDays(new Date(), new Date(data.start_date));
-    if (days < 0) return null;
-    const years = Math.floor(days / 365);
-    const months = Math.floor((days % 365) / 30);
-    const restDays = days - years * 365 - months * 30;
-    return { years, months, days: restDays };
-  })();
 
   const handleShare = async () => {
     const url = window.location.href;
@@ -154,7 +166,12 @@ const Retro = () => {
                 <span className="mx-2" style={{ color: "#D4AF37" }}>·</span>
                 <span style={{ color: "#E8456B" }}>{counter.days}</span> <span className="text-base" style={{ color: "#999" }}>dias</span>
               </div>
-              <p className="mt-3 text-sm" style={{ color: "#666" }}>juntos até hoje 🦢</p>
+              <div className="mt-4 inline-flex items-center gap-2 rounded-full bg-white/70 px-5 py-2 font-mono text-sm tabular-nums shadow-sm md:text-base" style={{ color: "#1A1A2E" }}>
+                <span className="font-bold" style={{ color: "#E8456B" }}>{String(counter.hours).padStart(2, "0")}</span><span style={{ color: "#999" }}>h</span>
+                <span className="font-bold" style={{ color: "#E8456B" }}>{String(counter.minutes).padStart(2, "0")}</span><span style={{ color: "#999" }}>m</span>
+                <span className="font-bold" style={{ color: "#E8456B" }}>{String(counter.seconds).padStart(2, "0")}</span><span style={{ color: "#999" }}>s</span>
+              </div>
+              <p className="mt-3 text-sm" style={{ color: "#666" }}>juntos até agora 🦢</p>
               {data.start_date && (
                 <p className="mt-1 text-xs" style={{ color: "#999" }}>desde {format(new Date(data.start_date), "dd 'de' MMMM 'de' yyyy", { locale: ptBR })}</p>
               )}

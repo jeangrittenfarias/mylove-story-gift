@@ -1,9 +1,10 @@
 import { useState, useMemo, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { format, differenceInDays } from "date-fns";
+import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import SkyBackground from "@/components/SkyBackground";
+import PreviewCard from "@/components/PreviewCard";
 import { supabase } from "@/integrations/supabase/client";
 import cisyAcenando from "@/assets/cisy-acenando.png";
 import cisyPensando from "@/assets/cisy-pensando.png";
@@ -89,16 +90,27 @@ const Criar = () => {
     return () => clearTimeout(t);
   }, [songSearch]);
 
+  // Tick every second so h/m/s update live
+  const [now, setNow] = useState(() => new Date());
+  useEffect(() => {
+    const t = setInterval(() => setNow(new Date()), 1000);
+    return () => clearInterval(t);
+  }, []);
+
   const counter = useMemo(() => {
     if (!startDate) return null;
     const start = new Date(startDate);
-    const days = differenceInDays(new Date(), start);
-    if (days < 0) return null;
-    const years = Math.floor(days / 365);
-    const months = Math.floor((days % 365) / 30);
-    const restDays = days - years * 365 - months * 30;
-    return { years, months, days: restDays };
-  }, [startDate]);
+    const diff = now.getTime() - start.getTime();
+    if (diff < 0) return null;
+    const totalDays = Math.floor(diff / 86400000);
+    const years = Math.floor(totalDays / 365);
+    const months = Math.floor((totalDays % 365) / 30);
+    const days = totalDays - years * 365 - months * 30;
+    const hours = Math.floor((diff % 86400000) / 3600000);
+    const minutes = Math.floor((diff % 3600000) / 60000);
+    const seconds = Math.floor((diff % 60000) / 1000);
+    return { years, months, days, hours, minutes, seconds };
+  }, [startDate, now]);
 
   const canNext = () => {
     if (step === 1) return !!relationshipType;
@@ -161,7 +173,8 @@ const Criar = () => {
     <div className="relative min-h-screen overflow-x-hidden px-4 py-8">
       <SkyBackground hearts={true} swans={false} clouds={true} />
 
-      <div className="relative z-10 mx-auto max-w-2xl">
+      <div className="relative z-10 mx-auto grid w-full max-w-6xl gap-8 lg:grid-cols-[minmax(0,1fr)_380px]">
+        <div>
         {/* Progress */}
         <div className="mb-6">
           <div className="mb-2 flex items-center justify-between text-xs" style={{ color: "#666" }}>
@@ -456,6 +469,19 @@ const Criar = () => {
             Iniciou em {format(new Date(startDate), "dd 'de' MMMM 'de' yyyy", { locale: ptBR })}
           </p>
         )}
+        </div>
+
+        {/* LIVE PREVIEW (right column on desktop) */}
+        <aside className="hidden lg:block">
+          <PreviewCard
+            title={title}
+            song={song}
+            message={message}
+            photos={photos}
+            counter={counter}
+            relationshipType={relationshipType}
+          />
+        </aside>
       </div>
     </div>
   );
