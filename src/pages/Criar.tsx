@@ -53,6 +53,8 @@ const Criar = () => {
   const [title, setTitle] = useState("");
   const [song, setSong] = useState<typeof SONGS[number] | null>(null);
   const [songSearch, setSongSearch] = useState("");
+  const [customSongName, setCustomSongName] = useState("");
+  const [customSongArtist, setCustomSongArtist] = useState("");
   const [message, setMessage] = useState("");
   const [photos, setPhotos] = useState<File[]>([]);
   const [startDate, setStartDate] = useState<string>("");
@@ -106,8 +108,8 @@ const Criar = () => {
           sender_name: senderName,
           receiver_name: receiverName,
           title,
-          song_name: song?.name || null,
-          song_artist: song?.artist || null,
+          song_name: customSongName.trim() || song?.name || null,
+          song_artist: customSongArtist.trim() || song?.artist || null,
           message,
           photo_urls: photoUrls,
           start_date: startDate,
@@ -339,7 +341,30 @@ const Criar = () => {
                   })}
                 </div>
 
-                <button type="button" onClick={() => { setSong(null); next(); }} className="mt-4 text-xs underline" style={{ color: "#999" }}>
+                <div className="mt-6 border-t pt-6" style={{ borderColor: "rgba(232,69,107,0.2)" }}>
+                  <p className="mb-4 text-xs font-semibold uppercase" style={{ color: "#999" }}>Ou adicione outra música</p>
+                  <div className="mb-3">
+                    <input
+                      value={customSongName}
+                      onChange={(e) => setCustomSongName(e.target.value)}
+                      placeholder="Nome da música"
+                      className="w-full rounded-xl border bg-white px-4 py-2.5 text-sm outline-none transition focus:border-pink-400"
+                      style={{ borderColor: "rgba(232,69,107,0.2)", color: "#1A1A2E" }}
+                    />
+                  </div>
+                  <div className="mb-3">
+                    <input
+                      value={customSongArtist}
+                      onChange={(e) => setCustomSongArtist(e.target.value)}
+                      placeholder="Nome do artista"
+                      className="w-full rounded-xl border bg-white px-4 py-2.5 text-sm outline-none transition focus:border-pink-400"
+                      style={{ borderColor: "rgba(232,69,107,0.2)", color: "#1A1A2E" }}
+                    />
+                  </div>
+                  <p className="text-xs" style={{ color: "#999" }}>💡 Integração Spotify em breve! Por enquanto, adicione manualmente.</p>
+                </div>
+
+                <button type="button" onClick={() => next()} className="mt-6 text-xs underline" style={{ color: "#999" }}>
                   Pular esta etapa
                 </button>
               </div>
