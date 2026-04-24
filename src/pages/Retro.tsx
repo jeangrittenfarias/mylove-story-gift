@@ -49,6 +49,28 @@ const Retro = () => {
     });
   }, [id]);
 
+  // Ticking clock for h/m/s in counter
+  const [now, setNow] = useState(() => new Date());
+  useEffect(() => {
+    const t = setInterval(() => setNow(new Date()), 1000);
+    return () => clearInterval(t);
+  }, []);
+
+  const counter = useMemo(() => {
+    if (!data?.start_date) return null;
+    const start = new Date(data.start_date);
+    const diff = now.getTime() - start.getTime();
+    if (diff < 0) return null;
+    const totalDays = Math.floor(diff / 86400000);
+    const years = Math.floor(totalDays / 365);
+    const months = Math.floor((totalDays % 365) / 30);
+    const days = totalDays - years * 365 - months * 30;
+    const hours = Math.floor((diff % 86400000) / 3600000);
+    const minutes = Math.floor((diff % 3600000) / 60000);
+    const seconds = Math.floor((diff % 60000) / 1000);
+    return { years, months, days, hours, minutes, seconds };
+  }, [data?.start_date, now]);
+
   if (loading) {
     return (
       <div className="relative flex min-h-screen items-center justify-center">
@@ -68,16 +90,6 @@ const Retro = () => {
       </div>
     );
   }
-
-  const counter = (() => {
-    if (!data.start_date) return null;
-    const days = differenceInDays(new Date(), new Date(data.start_date));
-    if (days < 0) return null;
-    const years = Math.floor(days / 365);
-    const months = Math.floor((days % 365) / 30);
-    const restDays = days - years * 365 - months * 30;
-    return { years, months, days: restDays };
-  })();
 
   const handleShare = async () => {
     const url = window.location.href;
