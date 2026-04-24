@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { format, differenceInDays } from "date-fns";
@@ -20,16 +20,23 @@ const RANDOM_TITLES = [
   "Você mudou tudo", "Feito um para o outro",
 ];
 
-const SONGS = [
-  { name: "Perfect", artist: "Ed Sheeran", duration: "4:23", color: "from-pink-400 to-rose-600" },
-  { name: "Die With A Smile", artist: "Lady Gaga & Bruno Mars", duration: "4:11", color: "from-amber-400 to-pink-500" },
-  { name: "A Thousand Years", artist: "Christina Perri", duration: "4:45", color: "from-purple-400 to-pink-400" },
-  { name: "Lover", artist: "Taylor Swift", duration: "3:41", color: "from-rose-300 to-pink-500" },
-  { name: "All of Me", artist: "John Legend", duration: "4:29", color: "from-yellow-400 to-orange-500" },
-  { name: "High School Sweethearts", artist: "Melanie Martinez", duration: "5:12", color: "from-pink-300 to-purple-500" },
-  { name: "Tudo Que Você Quiser", artist: "Lagum", duration: "3:55", color: "from-blue-400 to-pink-400" },
-  { name: "Te Amo Mais", artist: "Projota", duration: "4:02", color: "from-emerald-400 to-teal-500" },
-];
+type SpotifyTrack = {
+  id: string;
+  name: string;
+  artist: string;
+  album: string;
+  image: string | null;
+  duration_ms: number;
+  preview_url: string | null;
+  external_url?: string;
+};
+
+const formatDuration = (ms: number) => {
+  const total = Math.round(ms / 1000);
+  const m = Math.floor(total / 60);
+  const s = total % 60;
+  return `${m}:${s.toString().padStart(2, "0")}`;
+};
 
 const AI_MESSAGES: Record<RelType, string> = {
   love: "Desde o primeiro dia que te vi, soube que minha vida nunca mais seria a mesma. Você não é só meu amor — você é meu lar, meu sorriso garantido, minha escolha todos os dias. Obrigado por cada momento, cada risada, cada silêncio que só nós entendemos.",
@@ -48,8 +55,10 @@ const Criar = () => {
 
   const [relationshipType, setRelationshipType] = useState<RelType | string>("");
   const [title, setTitle] = useState("");
-  const [song, setSong] = useState<typeof SONGS[number] | null>(null);
+  const [song, setSong] = useState<SpotifyTrack | null>(null);
   const [songSearch, setSongSearch] = useState("");
+  const [songResults, setSongResults] = useState<SpotifyTrack[]>([]);
+  const [songLoading, setSongLoading] = useState(false);
   const [message, setMessage] = useState("");
   const [photos, setPhotos] = useState<File[]>([]);
   const [startDate, setStartDate] = useState<string>("");
@@ -57,10 +66,28 @@ const Criar = () => {
   const totalSteps = 6;
   const progress = (step / totalSteps) * 100;
 
-  const filteredSongs = useMemo(
-    () => SONGS.filter((s) => `${s.name} ${s.artist}`.toLowerCase().includes(songSearch.toLowerCase())),
-    [songSearch]
-  );
+  // Debounced Spotify search via edge function
+  useEffect(() => {
+    const q = songSearch.trim();
+    if (!q) { setSongResults([]); return; }
+    setSongLoading(true);
+    const t = setTimeout(async () => {
+      try {
+        const url = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/search-spotify?q=${encodeURIComponent(q)}`;
+        const res = await fetch(url, {
+          headers: { Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}` },
+        });
+        const json = await res.json();
+        setSongResults(json.tracks || []);
+      } catch (e) {
+        console.error(e);
+        setSongResults([]);
+      } finally {
+        setSongLoading(false);
+      }
+    }, 350);
+    return () => clearTimeout(t);
+  }, [songSearch]);
 
   const counter = useMemo(() => {
     if (!startDate) return null;
@@ -269,11 +296,20 @@ const Criar = () => {
                 </div>
 
                 <div className="max-h-64 space-y-2 overflow-y-auto pr-1">
-                  {filteredSongs.map((s) => {
-                    const selected = song?.name === s.name;
+                  {songLoading && (
+                    <div className="py-6 text-center text-xs" style={{ color: "#999" }}>Buscando no Spotify...</div>
+                  )}
+                  {!songLoading && songSearch && songResults.length === 0 && (
+                    <div className="py-6 text-center text-xs" style={{ color: "#999" }}>Nenhuma música encontrada</div>
+                  )}
+                  {!songLoading && !songSearch && (
+                    <div className="py-6 text-center text-xs" style={{ color: "#999" }}>Digite o nome de uma música ou artista 🎵</div>
+                  )}
+                  {songResults.map((s) => {
+                    const selected = song?.id === s.id;
                     return (
                       <button
-                        key={s.name}
+                        key={s.id}
                         type="button"
                         onClick={() => setSong(s)}
                         className={`flex w-full items-center gap-3 rounded-xl p-3 text-left transition ${selected ? "" : "hover:bg-pink-50/50"}`}
@@ -283,12 +319,16 @@ const Criar = () => {
                           border: selected ? undefined : "1px solid rgba(232,69,107,0.1)",
                         }}
                       >
-                        <div className={`h-12 w-12 rounded-md bg-gradient-to-br ${s.color}`} />
-                        <div className="flex-1">
-                          <div className="text-sm font-bold text-dark">{s.name}</div>
-                          <div className="text-xs" style={{ color: "#999" }}>{s.artist}</div>
+                        {s.image ? (
+                          <img src={s.image} alt="" className="h-12 w-12 rounded-md object-cover" />
+                        ) : (
+                          <div className="h-12 w-12 rounded-md bg-gradient-to-br from-pink-400 to-amber-500" />
+                        )}
+                        <div className="flex-1 min-w-0">
+                          <div className="truncate text-sm font-bold text-dark">{s.name}</div>
+                          <div className="truncate text-xs" style={{ color: "#999" }}>{s.artist}</div>
                         </div>
-                        <div className="text-xs" style={{ color: "#999" }}>{s.duration}</div>
+                        <div className="text-xs" style={{ color: "#999" }}>{formatDuration(s.duration_ms)}</div>
                       </button>
                     );
                   })}
